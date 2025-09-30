@@ -28,11 +28,11 @@ Preguntas clave:
 
 ---
 
-## 🛠️ Herramientas y Tecnologías  
-- **SQL (MySQL):** Limpieza y análisis del dataset consolidado.  
-- **Excel / Google Sheets:** Tablas dinámicas y análisis mensual.  
-- **PowerPoint:** Presentación ejecutiva para stakeholders.  
-- **Python/Pandas (opcional en pruebas):** Validación y exploración de datos.  
+## 🛠️ Herramientas Utilizadas  
+- **Excel / Google Sheets** → Limpieza inicial, exploración de datos, tablas dinámicas.  
+- **SQL (MySQL)** → Unificación de 12 meses de datos, transformación de campos, generación de métricas.  
+- **Tableau / Google Data Studio (opcional)** → Visualización de patrones de uso.  
+- **PowerPoint** → Presentación ejecutiva de hallazgos y recomendaciones.  
 
 ---
 
@@ -66,7 +66,7 @@ Preguntas clave:
 - **Duración promedio de viajes por tipo de usuario.**  
 - **Patrones mensuales de uso (estacionalidad).**  
 
-*(Puedes incluir aquí imágenes exportadas de tu PPT, por ejemplo en `/images` dentro del repo).*  
+*(Puedes incluir aquí imágenes exportadas de tu PPT en la carpeta `/images`).*  
 
 ### 6. Actuar (Act)  
 **Recomendaciones:**  
