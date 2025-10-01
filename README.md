@@ -36,7 +36,7 @@ Preguntas clave:
 
 ## 🗂️ Datos utilizados  
 
-- **Fuente:** Divvy / Cyclistic (archivos públicos).  
+- **Fuente:** Divvy / Cyclistic ((https://divvy-tripdata.s3.amazonaws.com/index.html)).  
 - **Cobertura:** 12 meses (ej.: enero–diciembre 2020).  
 - **Tamaño bruto:** ~1 GB (CSV) — cargado y procesado en MySQL.  
 - **Variables principales (ejemplos):**
