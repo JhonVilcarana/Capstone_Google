@@ -72,8 +72,10 @@ Preguntas clave:
 
 ---
 
-## 🔄 Proceso de análisis (resumen)
+## 🔄 Proceso de análisis
 
+
+1. **Ask**: Consolidación de CSVs y carga en MySQL (Identificar las diferencias en patrones de uso entre ciclistas casuales y miembros anuales, para diseñar estrategias que conviertan a los usuarios ocasionales en socios anuales).  
 1. **Prepare**: Consolidación de CSVs y carga en MySQL (tabla `trips_raw`).  
 2. **Process**: Limpieza (viajes inválidos, nulos, duplicados) y creación de variables derivadas (`ride_length_min`, `dia_semana`, `mes`).  
 3. **Analyze**: Agregados por tipo de usuario, día de la semana, mes, top estaciones, mapas.  
