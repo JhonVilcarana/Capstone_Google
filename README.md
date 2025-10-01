@@ -83,32 +83,128 @@ Preguntas clave:
 
 ---
 
-## ✅ Consultas SQL clave (ejemplos listos para usar)
+## 📊 Consultas SQL principales
 
-> Asuma que los datos crudos están en la tabla `trips_raw`. Ajustar nombres según tu esquema.
+El análisis se apoyó en **MySQL** para limpiar, transformar y explorar más de 12 millones de registros.  
+A continuación, se listan las consultas más relevantes utilizadas:
 
-### 1) Crear tabla limpia con duración en minutos y eliminar viajes inválidos
+---
+
+### 1. Carga de datos y limpieza inicial
+Se cargaron los CSV en la base de datos, transformando fechas y duraciones de viaje a segundos.
 ```sql
-CREATE TABLE trips_clean AS
+LOAD DATA LOCAL INFILE '/ruta/dataset.csv'
+INTO TABLE trips
+CHARACTER SET utf8mb4
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(@ride_id,@rideable_type,@started_at_txt,@ended_at_txt,
+ @start_station_name,@start_station_id,
+ @end_station_name,@end_station_id,
+ @start_lat,@start_lng,@end_lat,@end_lng,
+ @member_casual,@ride_length_txt,@day_of_week_txt)
+SET
+  ride_id            = @ride_id,
+  rideable_type      = @rideable_type,
+  started_at         = STR_TO_DATE(@started_at_txt, '%e/%m/%y %H:%i'),
+  start_station_name = NULLIF(@start_station_name,''),
+  end_station_name   = NULLIF(@end_station_name,''),
+  member_casual      = @member_casual,
+  @rl := REPLACE(@ride_length_txt, ',', '.'),
+  ride_length_sec    = CASE
+                         WHEN @rl REGEXP '^[0-9]{1,2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?$'
+                           THEN TIME_TO_SEC(@rl)
+                         WHEN @rl REGEXP '^[0-9]{1,2}:[0-9]{2}(\.[0-9]+)?$'
+                           THEN CAST(SUBSTRING_INDEX(@rl,':',1) AS DECIMAL(10,3))*60
+                              + CAST(SUBSTRING_INDEX(@rl,':',-1) AS DECIMAL(10,3))
+                         ELSE NULL
+                       END,
+  ended_at           = DATE_ADD(STR_TO_DATE(@started_at_txt, '%e/%m/%y %H:%i'),
+                                INTERVAL ride_length_sec SECOND),
+  day_of_week        = CASE LOWER(@day_of_week_txt)
+                         WHEN 'monday' THEN 1
+                         WHEN 'tuesday' THEN 2
+                         WHEN 'wednesday' THEN 3
+                         WHEN 'thursday' THEN 4
+                         WHEN 'friday' THEN 5
+                         WHEN 'saturday' THEN 6
+                         WHEN 'sunday' THEN 7
+                         WHEN 'lunes' THEN 1
+                         WHEN 'martes' THEN 2
+                         WHEN 'miércoles' THEN 3
+                         WHEN 'miercoles' THEN 3
+                         WHEN 'jueves' THEN 4
+                         WHEN 'viernes' THEN 5
+                         WHEN 'sábado' THEN 6
+                         WHEN 'sabado' THEN 6
+                         WHEN 'domingo' THEN 7
+                         ELSE NULL
+                       END;
+```
+### 2. Duración promedio por día de la semana y tipo de usuario
+```sql
 SELECT
-  ride_id,
-  rideable_type,
-  started_at,
-  ended_at,
-  start_station_name,
-  start_station_id,
-  end_station_name,
-  end_station_id,
-  start_lat,
-  start_lng,
-  end_lat,
-  end_lng,
   member_casual,
-  TIMESTAMPDIFF(SECOND, started_at, ended_at)/60.0 AS ride_length_min,
-  DAYNAME(started_at) AS dia_semana,
-  MONTH(started_at) AS mes,
-  YEAR(started_at) AS anio
-FROM trips_raw
-WHERE started_at IS NOT NULL
-  AND ended_at IS NOT NULL
-  AND TIMESTAMPDIFF(SECOND, started_at, ended_at) BETWEEN 30 AND 86400; -- entre 30s y 24h
+  ROUND(AVG(CASE WHEN day_of_week = 1 THEN ride_length_sec END)/60, 2) AS Lunes,
+  ROUND(AVG(CASE WHEN day_of_week = 2 THEN ride_length_sec END)/60, 2) AS Martes,
+  ROUND(AVG(CASE WHEN day_of_week = 3 THEN ride_length_sec END)/60, 2) AS Miercoles,
+  ROUND(AVG(CASE WHEN day_of_week = 4 THEN ride_length_sec END)/60, 2) AS Jueves,
+  ROUND(AVG(CASE WHEN day_of_week = 5 THEN ride_length_sec END)/60, 2) AS Viernes,
+  ROUND(AVG(CASE WHEN day_of_week = 6 THEN ride_length_sec END)/60, 2) AS Sabado,
+  ROUND(AVG(CASE WHEN day_of_week = 7 THEN ride_length_sec END)/60, 2) AS Domingo
+FROM trips
+WHERE ride_length_sec IS NOT NULL
+GROUP BY member_casual;
+```
+### 3. Número de viajes por día de la semana
+```sql
+SELECT
+  member_casual,
+  SUM(CASE WHEN day_of_week = 1 THEN 1 ELSE 0 END) AS Lunes,
+  SUM(CASE WHEN day_of_week = 2 THEN 1 ELSE 0 END) AS Martes,
+  SUM(CASE WHEN day_of_week = 3 THEN 1 ELSE 0 END) AS Miercoles,
+  SUM(CASE WHEN day_of_week = 4 THEN 1 ELSE 0 END) AS Jueves,
+  SUM(CASE WHEN day_of_week = 5 THEN 1 ELSE 0 END) AS Viernes,
+  SUM(CASE WHEN day_of_week = 6 THEN 1 ELSE 0 END) AS Sabado,
+  SUM(CASE WHEN day_of_week = 7 THEN 1 ELSE 0 END) AS Domingo
+FROM trips
+GROUP BY member_casual;
+```
+### 4. Duración promedio por tipo de usuario
+```sql
+SELECT 
+  member_casual,
+  SEC_TO_TIME(AVG(ride_length_sec)) AS promedio_duracion
+FROM trips
+WHERE ride_length_sec IS NOT NULL
+GROUP BY member_casual;
+```
+### 5. Viajes mensuales
+```sql
+SELECT DATE_FORMAT(started_at, '%Y-%m') AS periodo,
+       COUNT(*) AS total_viajes
+FROM trips
+GROUP BY periodo
+ORDER BY periodo;
+```
+### 6. Top 10 estaciones más usadas
+```sql
+SELECT start_station_name,
+       COUNT(*) AS total_viajes
+FROM trips
+WHERE start_station_name IS NOT NULL
+GROUP BY start_station_name
+ORDER BY total_viajes DESC
+LIMIT 10;
+```
+### 7. Exportar dataset limpio a CSV
+```sql
+SELECT *
+FROM trips
+INTO OUTFILE '/tmp/trips_export.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n';
+```
