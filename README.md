@@ -37,7 +37,7 @@ Preguntas clave:
 ## 🗂️ Datos utilizados  
 
 - **Fuente:** Divvy / Cyclistic (https://divvy-tripdata.s3.amazonaws.com/index.html).  
-- **Cobertura:** 12 meses (ej.: enero–diciembre 2020).  
+- **Cobertura:** 12 meses.  
 - **Tamaño bruto:** ~1 GB (CSV) — cargado y procesado en MySQL.  
 - **Variables principales (ejemplos):**
   - `ride_id` (ID viaje)
@@ -63,12 +63,10 @@ Preguntas clave:
 - Dashboard en Tableau Public:  
   https://public.tableau.com/views/Libro1_17510448553710/Dashboard1?:language=es-ES&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link
 
-- Archivos en este repositorio (añadir los archivos al repo):
+- Archivos en este repositorio:
   - `Case Study 1_How does a bike-share navigate speedy success.pdf`
-  - `Negro y Verde Bicicleta Ilustrada Producto Presentación.pdf`
+  - `Caso Capstone Google Analytics.pptx`
   - `SQL/` (consultas y scripts)
-  - `Tableau_Dashboard/dashboard_cyclistic.twbx` (opcional - si no quieres subir .twbx, dejar enlace a Tableau Public)
-  - `README.md` (este archivo)
 
 ---
 
