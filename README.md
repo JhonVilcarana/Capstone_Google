@@ -7,7 +7,6 @@
 ![Excel](https://img.shields.io/badge/Excel-217346?logo=microsoft-excel&logoColor=white)
 ![Tableau](https://img.shields.io/badge/Tableau-E97627?logo=tableau&logoColor=white)
 ![PowerPoint](https://img.shields.io/badge/PowerPoint-FF6F00?logo=microsoft-powerpoint&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 **Análisis de usuarios para optimizar estrategias de membresía en un sistema de bicicletas compartidas.**
 
@@ -198,13 +197,4 @@ WHERE start_station_name IS NOT NULL
 GROUP BY start_station_name
 ORDER BY total_viajes DESC
 LIMIT 10;
-```
-### 7. Exportar dataset limpio a CSV
-```sql
-SELECT *
-FROM trips
-INTO OUTFILE '/tmp/trips_export.csv'
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n';
 ```
